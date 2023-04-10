@@ -22,10 +22,8 @@ public class CustomJwtFilter implements GatewayFilter {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-        // Retrieve the header value from the request
         String headerValue = exchange.getRequest().getHeaders().getFirst("Authorization");
 
-        // Analyze the header value and validate it
         boolean isValid;
         try {
             isValid = validateHeaderValue(headerValue);
@@ -35,17 +33,14 @@ public class CustomJwtFilter implements GatewayFilter {
         }
 
         if (isValid) {
-            // If the header value is valid, continue processing the request
             return chain.filter(exchange);
         } else {
-            // If the header value is invalid, reject the request with a specific HTTP status
             exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
             return exchange.getResponse().setComplete();
         }
     }
 
     private boolean validateHeaderValue(String headerValue) throws NoSuchAlgorithmException, InvalidKeySpecException {
-        // Implement your custom validation logic here
         return headerValue != null && !headerValue.isEmpty() &&
                 jwtUtils.validateJwtToken(headerValue);
     }
